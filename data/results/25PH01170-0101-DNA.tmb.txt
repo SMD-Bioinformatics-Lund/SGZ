@@ -1,2 +1,0 @@
-sample	n_somatic	panel_size_mb	TMB
-results/25PH01170-0101-DNA	118	1.20	98.3333
