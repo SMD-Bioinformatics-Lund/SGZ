@@ -1,0 +1,34 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# --- Generated run output (regenerate via the commands in README.md) ---
+sgz_test/
+data/results/
+
+# --- Real sample data (not synthetic fixtures) ---
+# data/samples/ and data/expected_samples_outcome/ are the checked-in
+# regression-test fixtures documented in README.md and stay tracked.
+# Everything else directly under data/ is working output from real
+# sequencing runs and must never be committed.
+data/25PH01170-0101-DNA*
+data/25PL11031-0101-DNA*
+data/*.vcf
+data/*.vcf.gz
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Local env / secrets ---
+.env
