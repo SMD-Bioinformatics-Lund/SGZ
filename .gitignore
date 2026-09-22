@@ -23,6 +23,7 @@ data/25PH01170-0101-DNA*
 data/25PL11031-0101-DNA*
 data/*.vcf
 data/*.vcf.gz
+SMD_data/
 
 # --- OS / editor ---
 .DS_Store
