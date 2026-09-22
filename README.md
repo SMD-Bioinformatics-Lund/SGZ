@@ -220,7 +220,7 @@ python3.13 vcf_to_mutations.py sample.final.filtered.vcf -s MySample
 ```bash
 python3.13 vcf_to_mutations.py \
     sample.final.filtered.vcf \
-    -s 25PH01170-0101-DNA \
+    -s SMD_sample-DNA \
     -o sample.mut_aggr.full.txt
 ```
 
@@ -300,10 +300,10 @@ in `data/samples/`:
 
 ```
 #sample              mutation                              frequency  depth  pos               status   strand  effect
-25PH01170-0101-DNA   TNFRSF14:NM_003820:c.316C>T_p.R106C  0.0103     2      chr1:2559834      unknown  +       missense
-25PH01170-0101-DNA   MTOR:NM_004958:c.6811-5T>A:splice     0.0161     2      chr1:11121373     unknown  -       splice
-25PH01170-0101-DNA   ARID1A:NM_006015:c.3580G>T_p.G1194*   0.0105     2      chr1:26772852     unknown  +       nonsense
-25PH01170-0101-DNA   SPEN:NM_015001:c.1639del_p.V547Cfs*5:frameshift  0.0116  2  chr1:15920871  unknown  +  frameshift
+SMD_sample-DNA   TNFRSF14:NM_003820:c.316C>T_p.R106C  0.0103     2      chr1:2559834      unknown  +       missense
+SMD_sample-DNA   MTOR:NM_004958:c.6811-5T>A:splice     0.0161     2      chr1:11121373     unknown  -       splice
+SMD_sample-DNA   ARID1A:NM_006015:c.3580G>T_p.G1194*   0.0105     2      chr1:26772852     unknown  +       nonsense
+SMD_sample-DNA   SPEN:NM_015001:c.1639del_p.V547Cfs*5:frameshift  0.0116  2  chr1:15920871  unknown  +  frameshift
 ```
 
 > **Depth column note:** `depth` contains the **VD** field (ALT allele
