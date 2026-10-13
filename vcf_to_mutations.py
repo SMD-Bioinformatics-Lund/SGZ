@@ -4,7 +4,7 @@ Parse a VEP-annotated VCF file and output a mutation table compatible with
 the mut_aggr.full.txt format used by fmiSGZ_v2 and basicSGZ pipelines.
 
 Mutation annotation uses the MANE SELECT transcript (falls back to CANONICAL).
-Frequency = VAF (FORMAT field), Depth = VD (ALT allele count, FORMAT field).
+Frequency = VAF (FORMAT field), Depth = DP (total count, FORMAT field).
 """
 
 import argparse
@@ -187,9 +187,9 @@ def parse_vcf(vcf_path: str, sample_name: str, out_fh,
         # Parse format fields from the single sample
         sample_data = record.samples[list(record.samples)[0]]
         vaf = sample_data.get("VAF")
-        vd = sample_data.get("DP")
+        dp = sample_data.get("DP")
 
-        if vaf is None or vd is None:
+        if vaf is None or dp is None:
             continue
 
         # --------------- VAF FILTER ----------------------------------------
@@ -237,7 +237,7 @@ def parse_vcf(vcf_path: str, sample_name: str, out_fh,
 
         strand = "+" if strand_val == "1" else ("-" if strand_val == "-1" else ".")
         freq = round(float(vaf), 4)
-        depth = int(vd)   # VD = ALT allele observation count (as requested)
+        depth = int(dp)   # DP = total depth (required by fmiSGZ, which derives the alt count as depth x frequency)
 
         row = [
             sample_name,
