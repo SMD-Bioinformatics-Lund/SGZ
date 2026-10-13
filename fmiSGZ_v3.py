@@ -399,9 +399,8 @@ def core_SGZ(data_CNA: list, short_variants: list) -> list:
             else:
                 EAF = p * M / (p * C + 2 * (1 - p))
 
-            allele_burden = sv.frequency / EAF
-
-            # Avoid division by zero or invalid expected allele frequency.------fix
+            # Avoid division by zero or invalid expected allele frequency ------fix
+            # # Validate EAF BEFORE any division.
             if not np.isfinite(EAF) or EAF <= 0:
                 logging.warning(
                     "Cannot calculate allele burden for %s: "
