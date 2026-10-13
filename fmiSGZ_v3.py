@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-fmiSGZ_v2 - Foundation Medicine Somatic/Germline Zygosity (SGZ) classifier.
+fmiSGZ_v3 - Foundation Medicine Somatic/Germline Zygosity (SGZ) classifier.
 
 This module implements the FMI SGZ method for evaluating copy-number-aware
 somatic vs. germline origin and allelic zygosity of short variants detected
 by targeted next-generation sequencing.
+Derived from fmiSGZ_v2.py, with minor changes for bugs:
+    - avoid "UnboundLocalError: cannot access local variable 'max_prob_germline' where it is not associated with a value" when prior
+    keeping synonymous variants in vcf_to_mutations.py
+    - avoid "ZeroDivisionError: division by zero" for an EAF of 0.0 in core_SGZ() when computing allele burden
 
 Algorithm overview
 ------------------
@@ -172,12 +176,13 @@ def core_SGZ(data_CNA: list, short_variants: list) -> list:
             sv.frequency = 1.0
 
         # Initialize SGZ probability and log-odds variables before CNA processing
-        # to handle segments with missing CNA values without raising UnboundLocalError.
+        # to handle segments with missing CNA values without raising UnboundLocalError.------fix
         p = M = C = np.nan
 
         max_prob_germline = np.nan
         max_prob_somatic = np.nan
         logodds = np.nan
+        # -----------------------------
 
         seg_found = False
         clonality = 'NA'
@@ -395,6 +400,19 @@ def core_SGZ(data_CNA: list, short_variants: list) -> list:
                 EAF = p * M / (p * C + 2 * (1 - p))
 
             allele_burden = sv.frequency / EAF
+
+            # Avoid division by zero or invalid expected allele frequency.------fix
+            if not np.isfinite(EAF) or EAF <= 0:
+                logging.warning(
+                    "Cannot calculate allele burden for %s: "
+                    "EAF=%s, p=%s, C=%s, M=%s, frequency=%s",
+                    sv.mutation, EAF, p, C, M, sv.frequency
+                )
+                allele_burden = np.nan
+                burden_CI = [np.nan, np.nan]
+            else:
+                allele_burden = sv.frequency / EAF
+            # --------------------------------------------------
 
             try:
                 # Bootstrap 1 000 resamples to obtain the 95 % CI.
