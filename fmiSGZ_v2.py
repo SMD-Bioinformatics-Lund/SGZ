@@ -34,6 +34,7 @@ Two tab-separated output files are produced for each sample:
 
 * ``*.fmi.sgz.full.txt`` – all intermediate statistics.
 * ``*.fmi.sgz.txt``      – compact summary (mutation, call, zygosity).
+* ``*.tmb.txt``          – TMB (mutations per megabase) if the effective panel size is provided.
 
 Usage
 -----
@@ -171,7 +172,13 @@ def core_SGZ(data_CNA: list, short_variants: list) -> list:
         if sv.frequency > 1:
             sv.frequency = 1.0
 
+        # Initialize SGZ probability and log-odds variables before CNA processing
+        # to handle segments with missing CNA values without raising UnboundLocalError.
         p = M = C = np.nan
+
+        max_prob_germline = np.nan
+        max_prob_somatic = np.nan
+        logodds = np.nan        
 
         seg_found = False
         clonality = 'NA'
@@ -388,7 +395,18 @@ def core_SGZ(data_CNA: list, short_variants: list) -> list:
             else:
                 EAF = p * M / (p * C + 2 * (1 - p))
 
-            allele_burden = sv.frequency / EAF
+            # Avoid division by zero or invalid expected allele frequency
+            # # Validate EAF BEFORE any division.
+            if not np.isfinite(EAF) or EAF <= 0:
+                logging.warning(
+                    "Cannot calculate allele burden for %s: "
+                    "EAF=%s, p=%s, C=%s, M=%s, frequency=%s",
+                    sv.mutation, EAF, p, C, M, sv.frequency
+                )
+                allele_burden = np.nan
+                burden_CI = [np.nan, np.nan]
+            else:
+                allele_burden = sv.frequency / EAF
 
             try:
                 # Bootstrap 1 000 resamples to obtain the 95 % CI.
