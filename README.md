@@ -1,5 +1,13 @@
 # SGZ — Somatic/Germline Zygosity Classifiers
 
+**Version:** 2.0.3
+
+Creation of a helper script `filter_preTMB.py` to prepare the list of variants for the **Tumor Mutation Burden** (TMB) calculation.
+
+| Script | Input | Output |
+|--------|-------|--------|
+|`filter_preTMB.py` | VEP-annotated VCF, one caller extracted variants | `*_filtTMB.vcf` |
+
 **Version:** 2.0.2
 
 This repository contains two complementary tools for classifying short variants
@@ -29,6 +37,7 @@ VEP-annotated VCF:
 |--------|-------|--------|
 | `vcf_to_mutations.py` | VEP-annotated VCF (VarDict / any caller) | `mut_aggr.full.txt` |
 
+
 ---
 
 ## Table of Contents
@@ -41,7 +50,8 @@ VEP-annotated VCF:
    - [From GATK4 ModelSegments](#from-gatk4-modelsegments-gatk_to_cna_modelpy)
 5. [basicSGZ\_v2 — Basic Classifier](#basicsgz_v2--basic-classifier)
 6. [fmiSGZ\_v2 — FMI CNA-Aware Classifier](#fmisgz_v2--fmi-cna-aware-classifier)
-7. [Tumor Mutation Burden (TMB)](#tumor-mutation-burden-tmb)
+7. [Tumor Mutation Burden (TMB) - General](#tumor-mutation-burden-tmb---general)
+   - [TMB calculation workflow for the SomaticPanelPipeline](#tmc-calculation-workflow---somatic-panel-pipeline-cmd) 
 8. [Input File Formats](#input-file-formats)
 9. [Output File Formats](#output-file-formats)
 10. [Call Strings Reference](#call-strings-reference)
@@ -735,7 +745,7 @@ python3 fmiSGZ_v2.py sample11.mut_aggr.full.txt empty.cna_calls.txt
 
 ---
 
-## Tumor Mutation Burden (TMB)
+## Tumor Mutation Burden (TMB) - General
 
 TMB is a genomic biomarker widely used to predict response to immune checkpoint
 inhibitors.  It is defined as the total number of somatic mutations per
@@ -797,6 +807,14 @@ results/sample11  14         0.80           17.5000
 | TMB-Low  | < 10 mut/Mb |
 
 ---
+
+## TMC calculation workflow - Somatic Panel Pipeline CMD
+
+### Overview
+see details in [TMB calculation workflow - Somatic Panel Pipeline CMD](TMB.md)
+
+![overview for TMB calculation](images/TMB_workflow.drawio_2026.png)
+
 
 ## Input File Formats
 
