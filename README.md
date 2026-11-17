@@ -1116,6 +1116,9 @@ v2.0.1 (see [Changelog](#changelog)):
 | 4 | `fmiSGZ_v2.py` | `logOR_G = −inf` when germline p-value underflows | For very low VAF variants (e.g. NUP98, VAF = 0.02, depth = 1199), `binomtest` returns `p = 0.0` under the germline hypothesis, making `log10(0) = −∞` | Replaced the `−inf` special case with a `logsumexp` computation over individual `binom.logpmf` values in log-space |
 | 5 | `fmiSGZ_v2.py` | `ValueError: p (nan) must be in range [0,1]` | When a CNA segment has `CN`, `numMAtumorPred`, or `purity` = `NA`, the computed expected AF is NaN and `binomtest` raises a `ValueError` | Added a NaN guard before the binomial tests; `purity = 'NA'` now stored as `np.nan` like other nullable segment fields |
 | 6 | `fmiSGZ_v2.py` | Over-counting of somatic variants due to low-quality calls | With purity ~0.70, every variant with VAF < 5 % was auto-classified `subclonal somatic` regardless of variant-call quality, inflating TMB by including noise calls | The `subclonal somatic` shortcut now requires input `status ∈ {high, moderate}`; `low`-quality variants fall through to full binomial testing |
+| 7 | `fmiSGZ_v2.py` | Division by zero when expected allele frequency (EAF) is zero. | `ZeroDivisionError` during allele-burden calculation. | Check `EAF` validity before division; assign NaN to allele burden and its confidence interval (CI) when EAF is invalid.|
+| 8 | `fmiSGZ_v2.py` | Probability and log-odds variables were not initialized when CNA segment data were missing. | `UnboundLocalError` for max_prob_germline when processing variants, observed when using `--synonymous` in `vcf_to_mutations.py`. | Initialized `max_prob_germline`, `max_prob_somatic` and `logodds` to `np.nan` before CNA segment processing.|
+
 
 > **Maintenance note (v2.0.2):** the `status` column was added to
 > `fmiSGZ_v2.py`'s output files (see [Changelog](#changelog)), but the
