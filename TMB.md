@@ -105,7 +105,7 @@ singularity exec -B /fs1 $PYTHON_SIF python3 "$SCRIPT" \
 ```
 
 ### - 3_vcf_to_mutations.py (written by Saile)
-FoundationOne algo (FDA), Inst Curie algo (pyTMB) and old work from Vitkor on TMB chose VAF >= 0.05. For FFPE samples, pyTMB uses a cut-off at 0.1. Here, both of these cut-offs are chosen.
+FoundationOne algo (FDA), Inst Curie algo (pyTMB) and old work from Vitkor on TMB chose VAF >= 0.05 (5%). For FFPE samples, pyTMB uses a cut-off at 0.1 (10%). Here, both of these cut-offs are chosen.
 - FDA FO algorithm:
 https://www.accessdata.fda.gov/cdrh_docs/pdf17/P170019S016B.pdf
 - pyTMB:
