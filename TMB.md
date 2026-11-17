@@ -76,6 +76,8 @@ The tumor purity is also required.
 
 ### 1 - extract one caller variants
 Use of the 8th column of the vcf where the caller is indicated
+
+The caller to be used for variants extraction is specified in the config file under params.extraction_type. All variants called by the selected variants are extracted.
 ```
 awk -v pattern="${params.extraction_type}" '/^#/ || $8 ~ "^[^;]*" pattern "[^;]*"' "${vcf}" \
             > "${prefix}.final.filtered_${params.extraction_type}.vcf"
