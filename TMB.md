@@ -20,7 +20,7 @@ The final.filtered vcf (from snv_annotate) of the Somatic Panel Pipeline is proc
         - remove variants:
             1. with warnings ("FAIL*,*PON*,WARN_MQ,Q10,GERMLINE*,p8,pSTD,WARN_LOW_TCOV,*HOMOPOLYMER*,NM5.25,WARN_STRANDBIAS,t_lod_fstar,triallelic_site")
             2. likely germline variants (gnomAD > 0.1%, removing also the rare germline variants)
-            3. if VAF < 0.05 (0.1 if FFPE samples)
+            3. if VAF < 5% (10% if FFPE samples)
    3) CONVERTED into a compatible table for TMB calculation using SGZ tool
 
 ### **Copy number segments** | 
@@ -74,13 +74,13 @@ The tumor purity is also required.
 
 ## Processing the VCF
 
-### 1 - extract_vardict_variants.sh
+### 1 - extract one caller variants
 Use of the 8th column of the vcf where the caller is indicated
 ```
 awk -v pattern="${params.extraction_type}" '/^#/ || $8 ~ "^[^;]*" pattern "[^;]*"' "${vcf}" \
             > "${prefix}.final.filtered_${params.extraction_type}.vcf"
 ```
-### - 2_bedtools_intersect_pool1.sh
+### 2 - bedtools intersect
 Following the method of the FoundationOne, we filter the variants for the coding regions of pool1 (exons of interest). Of note, vcf_to_mutations.py also filters variants based on the selection of the respective protein_coding transcripts
 ```
 # Example for solid samples
@@ -93,18 +93,16 @@ singularity exec -B /fs1 $BEDTOOLS_SIF \
         -b ${params.tmb_regions} \
         > ${prefix}.final.filtered_${params.extraction_type}_pool1coding.vcf
 ```
-### -  2_filter_VCF_preTMB.sh
+### 3 -  filter_VCF_preTMB.py
 ```
-PYTHON_SIF="/fs1/resources/containers/python_hcvpipe.sif"
-SCRIPT="/fs1/julia/projects/TMB/solid_samples/2_vcf_formatting/5_pool1_only/4_pool1_gnomAD_FILTER_vcf/filter_VCF_preTMB.py"
-singularity exec -B /fs1 $PYTHON_SIF python3 "$SCRIPT" \
+python3 filter_VCF_preTMB.py \
         --vcf "$vcf" \
         --output "$OUTPUT_DIR/${basename}_filtTMB.vcf" \
         --max_freq 0.001  \
         --filters "FAIL*,*PON*,WARN_MQ,Q10,GERMLINE*,p8,pSTD,WARN_LOW_TCOV,*HOMOPOLYMER*,NM5.25,WARN_STRANDBIAS,t_lod_fstar,triallelic_site"
 ```
 
-### - 3_vcf_to_mutations.py (written by Saile)
+### 4 - vcf_to_mutations.py
 FoundationOne algo (FDA), Inst Curie algo (pyTMB) and old work from Vitkor on TMB chose VAF >= 0.05 (5%). For FFPE samples, pyTMB uses a cut-off at 0.1 (10%). Here, both of these cut-offs are chosen.
 - FDA FO algorithm:
 https://www.accessdata.fda.gov/cdrh_docs/pdf17/P170019S016B.pdf
